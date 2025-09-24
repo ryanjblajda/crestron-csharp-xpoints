@@ -77,7 +77,9 @@ namespace Blajda.xPoints
             if (xPointUtilities.IsDebug) CrestronConsole.PrintLine("XPOINT @ {0} | RELEASED LOCK ON PROPERTIES DICTIONARY", this.Name);
             //update the objects via the copy of the list
             if (xPointUtilities.IsDebug) CrestronConsole.PrintLine("XPOINT @ {0} | RESET PROPERTIES OUTPUTS DICTIONARY VALUES", this.Name);
-            currentProperties.ForEach(delegate(KeyValuePair<string, Tuple<ushort, object>> item) { this.MessageReceived(this, new xPointEventArgs(item.Value.Index, null, this.Type)); });
+            currentProperties.ForEach(delegate(KeyValuePair<string, Tuple<ushort, object>> item) {
+                if (this.MessageReceived != null) { this.MessageReceived(this, new xPointEventArgs(item.Value.Index, null, this.Type)); }
+            });
         }
 
         
