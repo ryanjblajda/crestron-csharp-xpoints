@@ -86,8 +86,6 @@ FUNCTION MAIN()
 	for(i = 1 to getNumArrayCols(Property))
 	{
 		thisCrosspoint.AddChangeProperty(Property[i], i);
-		//added 9-24-2025 to ensure that digital signals that propogate before program started or full init are forwarded to subscribers
-		//if (IsSignalDefined(Input_[i]) = ON) { thisCrosspoint.DigitalChange(Input_[i], Property[i], i); }
 	}
 
 	thisCrosspoint.GroupFilter = _group;
