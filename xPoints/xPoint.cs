@@ -70,8 +70,8 @@ namespace Blajda.xPoints
             {
                 if (xPointUtilities.IsDebug) CrestronConsole.PrintLine("XPOINT @ {0} | ACQUIRED LOCK ON PROPERTIES DICTIONARY", this.Name);
                 currentProperties = this.Properties.Where(item => item.Value.Value == null).ToList();
-                if (xPointUtilities.IsVerbose) CrestronConsole.PrintLine("XPOINT @ {0} | {1} PROPERTIES ARE OUTPUTS", currentProperties.Count);
-                if (xPointUtilities.IsVerbose) CrestronConsole.PrintLine("XPOINT @ {0} | PROPERTIES LIST:\t", String.Join("\r", currentProperties.Select(item => item.Key).ToArray()));
+                if (xPointUtilities.IsVerbose) CrestronConsole.PrintLine("XPOINT @ {0} | {1} PROPERTIES ARE OUTPUTS", this.Name, currentProperties.Count);
+                if (xPointUtilities.IsVerbose) CrestronConsole.PrintLine("XPOINT @ {0} | PROPERTIES LIST:\t{1}", this.Name, String.Join("\r", currentProperties.Select(item => item.Key).ToArray()));
                 if (xPointUtilities.IsDebug) CrestronConsole.PrintLine("XPOINT @ {0} | CREATE COPY OF PROPERTIES DICTIONARY", this.Name);
             }
             if (xPointUtilities.IsDebug) CrestronConsole.PrintLine("XPOINT @ {0} | RELEASED LOCK ON PROPERTIES DICTIONARY", this.Name);
@@ -170,7 +170,7 @@ namespace Blajda.xPoints
         {
             lock (this.Properties)
             {
-                if (xPointUtilities.IsVerbose) CrestronConsole.PrintLine("{0} | ACQUIRING LOCK TO CREATE PROPERTY {1} | {2}", this.Name, property);
+                if (xPointUtilities.IsVerbose) CrestronConsole.PrintLine("{0} | ACQUIRING LOCK TO CREATE PROPERTY {1} | {2}", this.Name, property, index);
 
                 if (property != "" && property != null)
                 {
