@@ -88,6 +88,7 @@ namespace Blajda.xPoints
                 if (Common != null)
                 {
                     List<string> ToSync = Common.ToList<string>();
+                    if (xPointUtilities.IsVerbose) { CrestronConsole.PrintLine("XPOINT @ {0} -> {2} COMMON PROPERTIES WITH XPOINT @ {1} [NULL]", this.Name, requestor.Name, ToSync.Count); }
                     ToSync.ForEach(delegate(string item) //for each item get the status.
                     {
                         if (this.Properties[item].Value != null) //if the value is null we are assuming thats an output property
@@ -108,6 +109,7 @@ namespace Blajda.xPoints
                         }
                     });
                 }
+                else { if (xPointUtilities.IsVerbose) { CrestronConsole.PrintLine("XPOINT @ {0} -> NO COMMON PROPERTIES WITH XPOINT @ {1} [NULL]", this.Name, requestor.Name); } }
             }
         }
         
