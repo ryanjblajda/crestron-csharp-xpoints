@@ -76,7 +76,7 @@ namespace Blajda.xPoints
             }
             if (xPointUtilities.IsDebug) CrestronConsole.PrintLine("XPOINT @ {0} | RELEASED LOCK ON PROPERTIES DICTIONARY", this.Name);
             //update the objects via the copy of the list
-            if (xPointUtilities.IsDebug) CrestronConsole.PrintLine("XPOINT @ {0} | RESET PROPERTIES DICTIONARY VALUES", this.Name);
+            if (xPointUtilities.IsDebug) CrestronConsole.PrintLine("XPOINT @ {0} | RESET PROPERTIES OUTPUTS DICTIONARY VALUES", this.Name);
             currentProperties.ForEach(delegate(KeyValuePair<string, Tuple<ushort, object>> item) { this.MessageReceived(this, new xPointEventArgs(item.Value.Index, null, this.Type)); });
         }
 
@@ -146,18 +146,20 @@ namespace Blajda.xPoints
         {
             lock (this.Properties)
             {
-                if (xPointUtilities.IsVerbose) CrestronConsole.PrintLine("{0} | ACQUIRING LOCK TO UPDATE PROPERTY {1} | {2}", this.Name, property, value);
+                if (xPointUtilities.IsVerbose) CrestronConsole.PrintLine("{0} | ACQUIRING LOCK TO UPDATE PROPERTY {1} | INDEX => {2}", this.Name, property, value);
 
                 if (property != "" && property != null)
                 {
                     Tuple<ushort, object> result = new Tuple<ushort, object>();
                     if (this.Properties.TryGetValue(property, out result)) //make sure that the key doesnt exist already
                     {
+                        if (xPointUtilities.IsDebug) CrestronConsole.PrintLine("{0} | UPDATING PROPERTY {1} | INDEX => {2} | VALUE => {3}", this.Name, property, index, value);
                         result.Value = value; //if it does, modify the value
                         result.Index = index;
                     }
                     else
                     {
+                        if (xPointUtilities.IsDebug) CrestronConsole.PrintLine("{0} | CREATE NEW PROPERTY {1} | INDEX => {2} | VALUE => {3}", this.Name, property, index, value);
                         this.Properties.Add(property, new Tuple<ushort, object>(index, value)); //if not make a new one.
                     }
                 }
@@ -170,7 +172,7 @@ namespace Blajda.xPoints
         {
             lock (this.Properties)
             {
-                if (xPointUtilities.IsVerbose) CrestronConsole.PrintLine("{0} | ACQUIRING LOCK TO CREATE PROPERTY {1} | {2}", this.Name, property, index);
+                if (xPointUtilities.IsVerbose) CrestronConsole.PrintLine("{0} | ACQUIRING LOCK ON PROPERTIES", this.Name, property, index);
 
                 if (property != "" && property != null)
                 {
@@ -184,9 +186,11 @@ namespace Blajda.xPoints
                     }
                     else
                     {
+                        if (xPointUtilities.IsDebug) CrestronConsole.PrintLine("{0} | CREATE NEW PROPERTY {1} | INDEX => {2}", this.Name, property, index);
                         this.Properties.Add(property, new Tuple<ushort, object>(index, null)); //if not make a new one.
                     }
                 }
+                else { if (xPointUtilities.IsVerbose) CrestronConsole.PrintLine("{0} | PROPERTY CONTENTS {1} == EMPTY / NULL | INDEX => {2} --> NOT CREATING PROPERTY", this.Name, property, index); }
 
                 if (xPointUtilities.IsVerbose) CrestronConsole.PrintLine("{0} | RELEASING LOCK AFTER UPDATING PROPERTY", this.Name);
             }
