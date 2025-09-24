@@ -1,0 +1,113 @@
+				/*
+		Programmer: Ryan Blajda
+		
+        +MMMMMMMM7. .?MMMMMMMM.         
+     MMMMMMMMMMMMMMMMM8 .MMMMMMM        
+   MMMM  ...IMMMMM+. IMMMM.,MMMMM .N.   
+    .NMMMMMM=...   ..MM. MM$.MMMM .MMM  
+ .MMMMMM  MMM .... . M .M. M, MMM .MMMM 
+MMMMMM  MM..M:.        .M..M..MM,.MMMMMN
+MMMMM.:MM. M. M.        .,M..MM. MMMMMM.
+MMMM. MMM.,M..M. M  ... . MMM .MMMMMM.  
+ MMM  MMMM.$MM .MM. . ....=MMMMMMM.     
+  .M  MMMMM, MMMMI  ?MMMMM7. ...MMMM.   
+       MMMMMMM. 8MMMMMMMMMMMMMMMMM      
+         DMMMMMMM? ..7MMMMMMMM?.        
+            .. +DMN7 .
+
+				*/
+
+/**COMPILER DIRECTIVES**/
+
+#SYMBOL_NAME "xPoint String/Serial v1"
+#HINT "creates crosspoints with C#"
+#CATEGORY "46" "RBLAJDA-C#" 
+#PRINT_TO_TRACE
+#DEFAULT_VOLATILE
+#ENABLE_STACK_CHECKING
+#ENABLE_TRACE
+#ENABLE_DYNAMIC
+#DEFINE_CONSTANT ciMaxParameterLength 48
+#DEFINE_CONSTANT ciInputStringLength 528
+#DEFINE_CONSTANT ciMaxSignals 1024
+#HELP_BEGIN
+
+this module re-creates/combines the control & equipment crosspoint into one symbol (albeit only one signal type, much sadness)
+
+signals that go in will be propogated to other symbols that are subscribed to the same group, and contain the appropriate parameter. see below.
+
+you cannot have an input and an output signal in the same line [with the same parameter]
+
+INPUTS
+
+Group - this field determines what events this symbol will subscribe to. THIS IS CASE SENSITIVE
+
+Input[n] - a signal whose state you wish to send to other devices, and will correlate to a property
+
+OUTPUTS
+Output[n] - a signal whose state will reflect the state of xpoints who have the same property.
+
+PARAMETERS
+
+Property[n] - you must associate a property with a signal, be it input or output. THEY ARE CASE SENSITIVE
+#HELP_END
+
+/**LIBRARIES**/
+#USER_SIMPLSHARP_LIBRARY "xPoints"
+
+/**PARAMETERS**/
+STRING_PARAMETER _SKIP_, Property[ciMaxSignals][ciMaxParameterLength];
+
+/**INPUTS**/
+STRING_INPUT   Group[ciMaxParameterLength];
+STRING_INPUT   Input_[ciMaxSignals][ciInputStringLength];
+
+/**OUTPUTS**/
+#OUTPUT_SHIFT 1
+STRING_OUTPUT Output_[ciMaxSignals];
+
+/**GLOBAL VARIABLES**/
+xPoint thisCrosspoint;
+STRING _group[ciMaxParameterLength];
+
+/**FUNCTIONS**/
+FUNCTION MAIN()
+{
+	integer i;
+	waitForInitializationComplete();
+	RegisterEvent(thisCrosspoint, MessageReceived, OnMessageReceived);
+	thisCrosspoint.Name = getSymbolInstanceName();
+	thisCrosspoint.SetType(3);
+	
+	for(i = 1 to getNumArrayCols(Property))
+	{
+		thisCrosspoint.AddChangeProperty(Property[i], i);
+	}
+
+	thisCrosspoint.GroupFilter = _group;
+}
+
+/**EVENT HANDLERS**/
+EVENTHANDLER OnMessageReceived(xPoint sender, xPointEventArgs args)
+{
+	try {
+		Output_[args.OutputIndex] = args.StringValue;
+	}
+	catch
+	{
+		print("onreceiveerr");
+	}
+}
+
+CHANGE Group
+{
+	_group = Group;
+	thisCrosspoint.GroupFilter = _group;
+}
+
+CHANGE Input_
+{
+	integer iChanged;
+	iChanged = getLastModifiedArrayIndex();
+	thisCrosspoint.SerialChange(Input_[iChanged], Property[iChanged], iChanged);
+}
