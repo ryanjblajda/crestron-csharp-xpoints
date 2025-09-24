@@ -210,7 +210,7 @@ namespace Blajda.xPoints
 
         public void DigitalChange(ushort value, string property, ushort index)
         {
-            this.AddChangeProperty(property, index, SIMPL.Signal.Digital);
+            this.AddChangeProperty(property, index, (SIMPL.DigitalSignal)value);
             if (this.GroupFilter != null)
             {
                 if (xPointUtilities.IsDebug) CrestronConsole.PrintLine("{0} | CHANGE | Type: {1} // State: {2} // PropertyName: {3} // GroupFilter: {4} // Index: {5}", this.Name, this.Type, value, property, this.GroupFilter, index);
