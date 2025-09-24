@@ -175,9 +175,11 @@ namespace Blajda.xPoints
                 if (property != "" && property != null)
                 {
                     Tuple<ushort, object> result = new Tuple<ushort, object>();
-                    if (this.Properties.TryGetValue(property, out result)) //make sure that the key doesnt exist already
+
+                    //attempt to get an already existing key
+                    if (this.Properties.TryGetValue(property, out result))
                     {
-                        result.Value = null; //if it does, modify the value
+                        if (xPointUtilities.IsDebug) CrestronConsole.PrintLine("{0} | UPDATING EXISTING PROPERTY {1} | INDEX => {2}", this.Name, property, index);
                         result.Index = index;
                     }
                     else
